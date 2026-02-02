@@ -1,8 +1,7 @@
-from pymongo import MongoClient
+from motor.motor_asyncio import AsyncIOMotorClient
 
 MONGO_URL = "mongodb://localhost:27017"
+client = AsyncIOMotorClient(MONGO_URL)
 
-client = MongoClient(MONGO_URL)
-db = client["candidate_screening_db"]
-
-print("MongoDB connected")
+db = client["candidate_screening"]
+jobs_collection = db["jobs"]
