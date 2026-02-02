@@ -4,4 +4,6 @@ MONGO_URL = "mongodb://localhost:27017"
 client = AsyncIOMotorClient(MONGO_URL)
 
 db = client["candidate_screening"]
-jobs_collection = db["jobs"]
+resumes_collection = db["resumes"]
+screenings_collection = db["screenings"]
+
