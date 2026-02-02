@@ -1,5 +1,12 @@
-from app.database import resumes_collection, screenings_collection
+from motor.motor_asyncio import AsyncIOMotorClient
 
-# Backwards-compatible aliases expected by services
-resume_collection = resumes_collection
-screening_collection = screenings_collection
+MONGO_URL = "mongodb://localhost:27017"
+
+client = AsyncIOMotorClient(MONGO_URL)
+
+db = client["candidate_screening"]
+
+users_collection = db["users"]
+resumes_collection = db["resumes"]
+screenings_collection = db["screenings"]
+jobs_collection = db["jobs"]

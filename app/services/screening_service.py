@@ -1,4 +1,4 @@
-from app.db.mongodb import screening_collection
+from app.db.mongodb import screenings_collection
 from datetime import datetime
 
 async def create_screening(data: dict):

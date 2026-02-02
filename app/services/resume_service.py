@@ -1,4 +1,4 @@
-from app.db.mongodb import resume_collection
+from app.db.mongodb import resumes_collection
 from bson import ObjectId
 
 async def create_resume(data: dict):
