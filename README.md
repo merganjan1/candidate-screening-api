@@ -1,120 +1,132 @@
-🧠 Candidate Screening Platform API
+# Candidate Screening API
 
-FastAPI va MongoDB asosida qurilgan backend API. Ushbu loyiha recruiterlar uchun job posting yaratish, kandidat arizalarini qabul qilish, avtomatik scoring va AI yordamida kandidatni Backend yoki AI/ML yo‘nalishiga mosligini aniqlash imkonini beradi.
+FastAPI + MongoDB asosida qurilgan **Candidate Screening Platform API**. Ushbu backend recruiterlar uchun nomzodlarning CV (resume)larini saqlash, ko‘rish va token orqali himoyalangan endpointlar bilan ishlash imkonini beradi.
 
-🚀 Texnologiyalar
+---
 
-FastAPI – REST API
+## 🚀 Texnologiyalar
 
-MongoDB – NoSQL ma’lumotlar bazasi
+* **FastAPI** – REST API
+* **MongoDB** – Ma’lumotlar bazasi
+* **Motor** – Async MongoDB driver
+* **JWT (OAuth2 Password Flow)** – Authentication
+* **Swagger UI** – API testlash
 
-Motor – Async MongoDB driver
+---
 
-JWT Authentication – xavfsiz login/register
+## 📦 Loyihani ishga tushirish
 
-Pydantic – data validation
+### 1️⃣ Repository’ni clone qilish
 
-HuggingFace Transformers – lokal AI model
-
-Uvicorn – ASGI server
-
-📂 Loyiha tuzilmasi
-candidate-screening-api/
-│
-├── app/
-│   ├── main.py
-│   ├── config.py
-│   ├── database.py
-│   │
-│   ├── auth/
-│   │   ├── router.py
-│   │   ├── schemas.py
-│   │   └── utils.py
-│   │
-│   ├── jobs/
-│   │   ├── router.py
-│   │   └── schemas.py
-│   │
-│   ├── candidates/
-│   │   ├── router.py
-│   │   └── schemas.py
-│   │
-│   └── ai/
-│       └── classifier.py
-│
-├── requirements.txt
-├── .env
-├── .gitignore
-└── README.md
-
-⚙️ O‘rnatish
-1️⃣ Repository’ni clone qilish
-git clone https://github.com/your-username/candidate-screening-api.git
+```bash
+git clone <repo_url>
 cd candidate-screening-api
+```
 
-2️⃣ Virtual environment
+### 2️⃣ Virtual environment
+
+```bash
 python -m venv venv
-venv\Scripts\activate
+venv\Scripts\activate  # Windows
+# source venv/bin/activate  # Linux / Mac
+```
 
-3️⃣ Dependency’larni o‘rnatish
+### 3️⃣ Dependency’larni o‘rnatish
+
+```bash
 pip install -r requirements.txt
+```
 
-4️⃣ MongoDB ishga tushirish
+### 4️⃣ MongoDB ishga tushirish
+
+```bash
 mongod
+```
 
-🔐 Environment sozlamalari
+MongoDB default: `mongodb://localhost:27017`
 
-.env fayl yarating:
+### 5️⃣ Backend server
 
-MONGO_URI=mongodb://localhost:27017
-DB_NAME=candidate_db
-JWT_SECRET=supersecretkey
-JWT_ALGORITHM=HS256
-
-▶️ Serverni ishga tushirish
+```bash
 uvicorn app.main:app --reload
+```
 
+Server: [http://127.0.0.1:8000](http://127.0.0.1:8000)
+Swagger: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
 
-Server:
-👉 http://127.0.0.1:8000
+---
 
-Swagger UI:
-👉 http://127.0.0.1:8000/docs
+## 🔐 Authentication (JWT + Swagger OAuth)
 
-🔑 Authentication
+### Register (ochiq endpoint)
 
-POST /auth/register – foydalanuvchi ro‘yxatdan o‘tish
+`POST /auth/register`
 
-POST /auth/login – login va JWT token olish
+```json
+{
+  "email": "test@mail.com",
+  "password": "123456",
+  "role": "recruiter"
+}
+```
 
-JWT token protected endpoint’larda talab qilinadi.
+### Login (OAuth2 Password Flow)
 
-💼 Job Posting
+Swagger orqali:
 
-POST /jobs/ – yangi job yaratish
+1. `/docs` sahifasiga o‘ting
+2. 🔒 **Authorize** tugmasini bosing
+3. `username` → email
+4. `password` → password
+5. **Authorize**
 
-GET /jobs/ – barcha job’larni ko‘rish
+Swagger avtomatik tokenni `Authorization` header’ga qo‘shadi.
 
-👤 Candidate Application
+---
 
-POST /candidates/ – kandidat ariza topshiradi
+## 📄 Resume API (Protected)
 
-Resume va skill’lar asosida avtomatik score hisoblanadi
+### Create Resume
 
-🤖 AI Classification
+`POST /resumes/`
 
-Loyiha lokal Transformer model ishlatadi va kandidatni quyidagi yo‘nalishlardan biriga tavsiya qiladi:
+```json
+{
+  "full_name": "Ali Valiyev",
+  "email": "ali@mail.com",
+  "skills": ["Python", "FastAPI", "MongoDB"],
+  "experience": 2,
+  "resume_text": "Backend developer with FastAPI and MongoDB experience"
+}
+```
 
-Backend Department
+### List Resumes
 
-AI / ML Department
+`GET /resumes/`
 
-Model app/ai/classifier.py ichida joylashgan.
+### Get Resume by ID
 
-📌 Eslatma
+`GET /resumes/{resume_id}`
 
-Loyiha Backend Engineer (Mid-Level) texnik topshirig‘i asosida bajarilgan
+⚠️ Ushbu endpointlar **JWT token** talab qiladi.
 
-Frontend mavjud emas (faqat API)
+---
 
-AI model internetga chiqmasdan, lokal ishlaydi
+## 🧠 Muhim Texnik Nuqtalar
+
+* JWT **stateless authentication** ishlatadi
+* Token `Authorization: Bearer <token>` orqali yuboriladi
+* MongoDB `ObjectId` → `str()` qilib qaytariladi
+* Swagger OAuth2 `OAuth2PasswordRequestForm` bilan integratsiya qilingan
+
+---
+
+## ✅ Holat
+
+* Auth: ✅
+* Swagger OAuth: ✅
+* Resume CRUD: ✅
+* MongoDB integration: ✅
+
+---
+
