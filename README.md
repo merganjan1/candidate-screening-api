@@ -27,7 +27,7 @@ Screening workflow with async background processing
 
 Local AI inference using Hugging Face transformers
 
-Department recommendation based on semantic similarity
+Department recommendation based on semantic similarity 
 
 MongoDB with async driver (Motor)
 
@@ -59,27 +59,6 @@ Local inference only (no external services)
 Async / Background
 
 FastAPI BackgroundTasks
-
-📂 Project Structure
-app/
-├── main.py
-├── db/
-│   └── mongodb.py
-├── routers/
-│   ├── auth.py
-│   ├── jobs.py
-│   ├── resumes.py
-│   └── screenings.py
-├── schemas/
-│   ├── user_schema.py
-│   ├── job_schema.py
-│   ├── resume_schema.py
-│   └── screening_schema.py
-├── services/
-│   ├── ai_service.py
-│   ├── job_service.py
-│   ├── screening_service.py
-│   └── background.py
 
 ⚙️ Setup Instructions
 1️⃣ Clone the repository
