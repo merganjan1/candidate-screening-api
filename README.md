@@ -130,3 +130,15 @@ Swagger avtomatik tokenni `Authorization` header’ga qo‘shadi.
 
 ---
 
+## AI Scoring
+
+This project uses a local Hugging Face transformer model to score candidates.
+
+- Model: `sentence-transformers/all-MiniLM-L6-v2`
+- Purpose: Calculate semantic similarity between a candidate's resume and a job description
+- Output: Score between 0–100
+- Works fully offline after the first model download
+
+Example endpoint:
+POST /ai/score
+
