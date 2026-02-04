@@ -6,5 +6,6 @@ async def create_screening(data: dict):
     data["score"] = 0
     data["decision"] = None
     data["created_at"] = datetime.utcnow()
-    result = await screening_collection.insert_one(data)
+
+    result = await screenings_collection.insert_one(data)
     return str(result.inserted_id)
