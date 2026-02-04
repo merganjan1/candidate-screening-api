@@ -1,144 +1,249 @@
-# Candidate Screening API
+Candidate Screening Platform API
 
-FastAPI + MongoDB asosida qurilgan **Candidate Screening Platform API**. Ushbu backend recruiterlar uchun nomzodlarning CV (resume)larini saqlash, ko‘rish va token orqali himoyalangan endpointlar bilan ishlash imkonini beradi.
+FastAPI + MongoDB + Local AI (HuggingFace)
 
----
+📌 Project Overview
 
-## 🚀 Texnologiyalar
+This project is a Candidate Screening Platform API built using FastAPI and MongoDB.
+It allows recruiters to manage job postings, collect candidate resumes, and automatically evaluate candidates using a local AI model.
 
-* **FastAPI** – REST API
-* **MongoDB** – Ma’lumotlar bazasi
-* **Motor** – Async MongoDB driver
-* **JWT (OAuth2 Password Flow)** – Authentication
-* **Swagger UI** – API testlash
+The AI runs asynchronously in the background and recommends whether a candidate is more suitable for:
 
----
+Backend Department
 
-## 📦 Loyihani ishga tushirish
+AI / ML Department
 
-### 1️⃣ Repository’ni clone qilish
+No external AI APIs are used — all inference runs locally.
 
-```bash
-git clone <repo_url>
+🎯 Key Features
+
+JWT-based Authentication (Register / Login)
+
+Job Management (Create, List, Get, Deactivate)
+
+Resume submission
+
+Screening workflow with async background processing
+
+Local AI inference using Hugging Face transformers
+
+Department recommendation based on semantic similarity
+
+MongoDB with async driver (Motor)
+
+Swagger/OpenAPI documentation
+
+🛠 Tech Stack
+Backend
+
+FastAPI
+
+MongoDB
+
+Motor (Async MongoDB driver)
+
+Pydantic
+
+JWT Authentication (python-jose)
+
+Passlib (password hashing)
+
+AI
+
+Hugging Face Transformers
+
+sentence-transformers/all-MiniLM-L6-v2
+
+Local inference only (no external services)
+
+Async / Background
+
+FastAPI BackgroundTasks
+
+📂 Project Structure
+app/
+├── main.py
+├── db/
+│   └── mongodb.py
+├── routers/
+│   ├── auth.py
+│   ├── jobs.py
+│   ├── resumes.py
+│   └── screenings.py
+├── schemas/
+│   ├── user_schema.py
+│   ├── job_schema.py
+│   ├── resume_schema.py
+│   └── screening_schema.py
+├── services/
+│   ├── ai_service.py
+│   ├── job_service.py
+│   ├── screening_service.py
+│   └── background.py
+
+⚙️ Setup Instructions
+1️⃣ Clone the repository
+git clone <repository-url>
 cd candidate-screening-api
-```
 
-### 2️⃣ Virtual environment
-
-```bash
+2️⃣ Create and activate virtual environment
 python -m venv venv
-venv\Scripts\activate  # Windows
-# source venv/bin/activate  # Linux / Mac
-```
+venv\Scripts\activate   # Windows
 
-### 3️⃣ Dependency’larni o‘rnatish
-
-```bash
+3️⃣ Install dependencies
 pip install -r requirements.txt
-```
 
-### 4️⃣ MongoDB ishga tushirish
+4️⃣ Run MongoDB
 
-```bash
+Make sure MongoDB is running locally:
+
 mongod
-```
 
-MongoDB default: `mongodb://localhost:27017`
 
-### 5️⃣ Backend server
+Default connection:
 
-```bash
-uvicorn app.main:app --reload
-```
+mongodb://localhost:27017
 
-Server: [http://127.0.0.1:8000](http://127.0.0.1:8000)
-Swagger: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+5️⃣ Environment Variables
 
----
+Create a .env file in the root directory:
 
-## 🔐 Authentication (JWT + Swagger OAuth)
+MONGO_URI=mongodb://localhost:27017
+JWT_SECRET_KEY=your_secret_key
 
-### Register (ochiq endpoint)
+6️⃣ Run the server
+python -m uvicorn app.main:app --reload
 
-`POST /auth/register`
 
-```json
+Server URL:
+
+http://127.0.0.1:8000
+
+
+Swagger documentation:
+
+http://127.0.0.1:8000/docs
+
+🔐 Authentication
+Register
+POST /auth/register
+
+Login
+POST /auth/login
+
+
+Use the returned JWT token with Authorize in Swagger.
+
+💼 Job Management
+Create Job
+POST /jobs
+
 {
-  "email": "test@mail.com",
-  "password": "123456",
-  "role": "recruiter"
+  "title": "Backend Developer",
+  "description": "FastAPI backend developer position",
+  "required_skills": ["python", "fastapi", "mongodb"],
+  "min_experience_years": 2,
+  "is_active": true
 }
-```
 
-### Login (OAuth2 Password Flow)
+List Jobs
+GET /jobs
 
-Swagger orqali:
+Get Job
+GET /jobs/{job_id}
 
-1. `/docs` sahifasiga o‘ting
-2. 🔒 **Authorize** tugmasini bosing
-3. `username` → email
-4. `password` → password
-5. **Authorize**
+Deactivate Job
+PATCH /jobs/{job_id}/deactivate
 
-Swagger avtomatik tokenni `Authorization` header’ga qo‘shadi.
+📄 Resume Management
+Create Resume
+POST /resumes/
 
----
-
-## 📄 Resume API (Protected)
-
-### Create Resume
-
-`POST /resumes/`
-
-```json
 {
-  "full_name": "Ali Valiyev",
-  "email": "ali@mail.com",
-  "skills": ["Python", "FastAPI", "MongoDB"],
-  "experience": 2,
+  "full_name": "John Doe",
+  "email": "john@example.com",
+  "skills": ["python", "fastapi", "mongodb"],
+  "experience": 3,
   "resume_text": "Backend developer with FastAPI and MongoDB experience"
 }
-```
 
-### List Resumes
+🧪 Screening & AI Workflow
+Create Screening
+POST /screenings/
 
-`GET /resumes/`
+{
+  "resume_id": "RESUME_ID_HERE"
+}
 
-### Get Resume by ID
 
-`GET /resumes/{resume_id}`
+What happens next:
 
-⚠️ Ushbu endpointlar **JWT token** talab qiladi.
+Screening is created with status pending
 
----
+Background task starts automatically
 
-## 🧠 Muhim Texnik Nuqtalar
+AI model runs locally
 
-* JWT **stateless authentication** ishlatadi
-* Token `Authorization: Bearer <token>` orqali yuboriladi
-* MongoDB `ObjectId` → `str()` qilib qaytariladi
-* Swagger OAuth2 `OAuth2PasswordRequestForm` bilan integratsiya qilingan
+Screening is updated with AI results
 
----
+Status changes to scored
 
-## ✅ Holat
+Get Screening Result
+GET /screenings/{id}
 
-* Auth: ✅
-* Swagger OAuth: ✅
-* Resume CRUD: ✅
-* MongoDB integration: ✅
 
----
+Example response:
 
-## AI Scoring
+{
+  "id": "6982f0c640b8ed3adb1b22a0",
+  "resume_id": "6982eff63adc3b59415efaa1",
+  "status": "scored",
+  "ai_department": "backend",
+  "ai_department_score": 0.411,
+  "created_at": "2026-02-04T07:09:58.213000",
+  "scored_at": "2026-02-04T07:09:58.660000"
+}
 
-This project uses a local Hugging Face transformer model to score candidates.
+🤖 AI Department Recommendation
+Model
 
-- Model: `sentence-transformers/all-MiniLM-L6-v2`
-- Purpose: Calculate semantic similarity between a candidate's resume and a job description
-- Output: Score between 0–100
-- Works fully offline after the first model download
+sentence-transformers/all-MiniLM-L6-v2
 
-Example endpoint:
-POST /ai/score
+Reference Profiles
 
+Backend Profile
+
+REST APIs, databases, distributed systems, caching,
+microservices, docker, kubernetes, authentication
+
+
+AI / ML Profile
+
+machine learning, transformers, pytorch,
+embeddings, NLP, deep learning, inference
+
+AI Logic
+
+Generate embedding for resume text
+
+Generate embeddings for backend and AI profiles
+
+Compute cosine similarity
+
+Choose the department with higher similarity
+
+⚙️ Design Decisions
+
+AI model is loaded once at startup
+
+Background tasks prevent blocking API requests
+
+MongoDB ObjectId and datetime fields are safely serialized
+
+Clean separation between routers, services, and schemas
+
+🧪 Testing
+
+Manual testing via Swagger UI:
+
+http://127.0.0.1:8000/docs
