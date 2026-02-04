@@ -6,6 +6,9 @@ from app.services.ai_service import ai_department_eval
 
 
 async def process_screening(screening_id: str):
+    print("BACKGROUND STARTED", screening_id)
+    # pastdagi kodlar o‘z joyida qoladi
+
     screening = await screenings_collection.find_one(
         {"_id": ObjectId(screening_id)}
     )
@@ -29,4 +32,3 @@ async def process_screening(screening_id: str):
             "scored_at": datetime.utcnow()
         }}
     )
-    

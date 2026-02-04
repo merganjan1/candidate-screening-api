@@ -12,11 +12,11 @@ router = APIRouter(
     tags=["Screenings"]
 )
 
-# -----------------------------
-# CREATE SCREENING (POST)
-# -----------------------------
+# ==================================================
+# CREATE SCREENING (POST) — AI BACKGROUND ISHLAYDI
+# ==================================================
 @router.post("/", status_code=201)
-async def create(
+async def create_screening_endpoint(
     screening: ScreeningCreate,
     background_tasks: BackgroundTasks
 ):
@@ -29,29 +29,34 @@ async def create(
         screening_id
     )
 
-    return {"id": screening_id}
+    return {
+        "id": screening_id
+    }
 
 
-# -----------------------------
+# ==================================================
 # GET SCREENING BY ID (GET)
-# -----------------------------
+# ==================================================
 @router.get("/{id}")
 async def get_screening(id: str):
+    # 1. ObjectId tekshiruvi
     try:
-        screening = await screenings_collection.find_one(
-            {"_id": ObjectId(id)}
-        )
+        oid = ObjectId(id)
     except Exception:
-        raise HTTPException(status_code=400, detail="Invalid screening ID")
+        raise HTTPException(status_code=400, detail="Invalid screening id")
 
+    # 2. DB dan olish
+    screening = await screenings_collection.find_one({"_id": oid})
     if not screening:
         raise HTTPException(status_code=404, detail="Screening not found")
 
+    # 3. Datetime serializer
     def serialize_dt(value):
         if isinstance(value, datetime):
             return value.isoformat()
-        return value  # string yoki None bo‘lsa
+        return value
 
+    # 4. Response
     return {
         "id": str(screening["_id"]),
         "resume_id": str(screening.get("resume_id")),
